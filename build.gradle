@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group 'CursoManejoCucumber'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.11.0'
+    implementation group: 'io.cucumber', name: 'cucumber-java', version: '7.13.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
+    implementation group: 'tech.grasshopper', name: 'extentreports-cucumber7-adapter', version: '1.7.0'
+    implementation 'io.github.bonigarcia:webdrivermanager:5.4.1'
+
+    testImplementation 'io.cucumber:cucumber-junit:7.13.0'
+    testImplementation 'junit:junit:4.13.2'
+
+
+}
+
+test {
+    systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
+}
