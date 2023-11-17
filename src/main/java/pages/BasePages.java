@@ -9,6 +9,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import utils.ElementNotFoundException;
 
 import java.text.Normalizer;
 import java.time.Duration;
@@ -44,17 +45,23 @@ public class BasePages {
         driver = new ChromeDriver(chromeOptions);
     }
 
-    private WebElement find(String locator){
-        By by;
-        if (locator.startsWith("//")) {
-            by = By.xpath(locator);
-        } else {
-            by = By.cssSelector(locator);
+    private WebElement find(String locator) {
+        WebElement element = findObject(locator);
+        if (element== null) {
+            throw new ElementNotFoundException("Element " + locator + " not found");
         }
+        return element;
+    }
+
+    private WebElement findObject(String locator) {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
+            if (locator.startsWith("//")) {
+                return wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(locator)));
+            } else {
+                return wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(locator)));
+            }
         } catch (org.openqa.selenium.TimeoutException e){
-            return wait.until(ExpectedConditions.presenceOfElementLocated(by));
+            return null;
         }
     }
 
@@ -86,7 +93,7 @@ public class BasePages {
 
     }
 
-    public void doubleClick(String locator){
+    public void doubleClick(String locator) {
         Actions actions = new Actions(driver);
         actions.doubleClick(find(locator));
     }
@@ -98,27 +105,15 @@ public class BasePages {
     }
 
     public boolean elementIsEnabled(String locator) {
-        try {
-            return find(locator).isEnabled();
-        } catch (org.openqa.selenium.TimeoutException e) {
-            return false;
-        }
+        return find(locator).isEnabled();
     }
 
     public boolean elementIsDisplayed(String locator) {
-        try {
-            return find(locator).isDisplayed();
-        } catch (org.openqa.selenium.TimeoutException e) {
-            return false;
-        }
+        return find(locator).isDisplayed();
     }
 
     public boolean elementIsSelected(String locator) {
-        try {
-            return find(locator).isSelected();
-        } catch (org.openqa.selenium.TimeoutException e) {
-            return false;
-        }
+        return find(locator).isSelected();
     }
 
     public static Scenario getScenario() {
@@ -167,17 +162,17 @@ public class BasePages {
         actions.scrollToElement(find(locator)).perform();
     }
 
-    public void selectFromDropdownByValue(String locator, String valueToSelect){
+    public void selectFromDropdownByValue(String locator, String valueToSelect) {
         Select dropdown = new Select(find(locator));
         dropdown.selectByValue(valueToSelect);
     }
 
-    public void selectFromDropdownByIndex(String locator, int valueToSelect){
+    public void selectFromDropdownByIndex(String locator, int valueToSelect) {
         Select dropdown = new Select(find(locator));
         dropdown.selectByIndex(valueToSelect);
     }
 
-    public void selectFromDropdownByText(String locator, String valueToSelect){
+    public void selectFromDropdownByText(String locator, String valueToSelect) {
         Select dropdown = new Select(find(locator));
         dropdown.selectByVisibleText(valueToSelect);
     }
